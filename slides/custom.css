@@ -1,7 +1,16 @@
 section {
-  text-align: left;
+  text-align: left !important;
 }
 
 img {
   border: 0 !important;
+}
+
+code {
+  font-size: 90% !important;
+}
+
+.reveal pre code {
+  background: white !important;
+  color: #4d4d4c !important;
 }

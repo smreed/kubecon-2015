@@ -37,6 +37,13 @@ Early Kubernetes adopter:
   dev or prod mode w/ no change. Walk through changes made to mattermost,
   for example.
 
+<!--
+misc notes
+
+at some point, after adapters/ambassadors/sidecars are deployed you
+now have a "monolithic" "Modular Container"
+-->
+
 ---
 
 # Motivation
@@ -62,9 +69,96 @@ Early Kubernetes adopter:
 * An amalgam of orthogonal concerns.
 * May still utilize many other external services (DB, cache, SMTP, etc)
 
+Often, they are not very cohesive pieces of software.
+
 <!--
 * Briefly, What's a monolith? 
 -->
+
+---
+
+# Step #1: Containerize
+
+Get it in Kubernetes.
+
+* Expose ports
+* Mount filesystems:
+  * configuration
+  * persistent storage
+  * logs
+
+TODO: snippet of monolith Dockerfile?
+
+<!--
+Brendan Burns' "The Distributed System Toolkit" at Dockercon SF 2015
+-->
+
+---
+
+# Step #1: Containerize
+
+<pre><code class="dockerfile">FROM ubuntu:14.04
+
+EXPOSE 8065
+VOLUME /mattermost/data
+# TODO logs
+
+# Install
+
+ADD config.json /mattermost/config/
+
+WORKDIR /mattermost/bin
+ENTRYPOINT /mattermost/bin/platform</code></pre>
+
+---
+
+# Step #1: Containerize
+
+1. `docker build -t my-monolith .`
+2. `docker push my-monolith`
+3. <code>kubectl run my-monolith \<br>--image=my-monolith</code>
+
+<!--
+even if your container is the only thing running in the cluster, you still
+get the advantages of the kubernetes substrate
+-->
+
+---
+
+# Step #2: <br>Services
+
+* Service for every external dependency
+  * databases
+  * webhooks, APIs
+* treat these as "prereqs"
+
+These services must exist, hardcode them!
+
+Kubernetes Service becomes the "interface" to these external dependencies.
+
+Interfaces allow decoupling, help reason about cohesion of system components.
+
+
+---
+
+# Step #2: <br>More Services
+
+* Convert libraries to services
+  * As helpers in same pod
+  * Or as "Services"
+
+Some libraries exist in monolithic apps just to enable interaction with an
+external service. Often times, details of these systems leak into your
+monolith in the form of boilerplate code, or configuration that needs to be
+injected into the library.
+
+Examples:
+
+* smtp: host, port, auth credentials, supported encryption
+* cache shards: names, how many, how are keys hashed
+* TLS configuration: host certs, client certs
+
+This increases coupling, decreases cohesion.
 
 ---
 
@@ -74,6 +168,7 @@ The metaphor doesn't entirely fit, but it sounds cool.
 
 * `Services` elevate your external dependencies to 1st class status
 * 
+
 Can Kubernetes help with
 
 * day to day development
@@ -108,7 +203,7 @@ db.port = 3306
 
 # Sandbox Slide
 
-<pre><code class="go hljs">package main
+<pre><code class="gooooo">package main
 
 import "fmt"
 

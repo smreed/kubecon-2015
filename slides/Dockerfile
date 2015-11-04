@@ -26,6 +26,7 @@ RUN npm install
 RUN sed -i Gruntfile.js -e 's/port: port,/port: port, hostname: "",/'
 RUN sed -i Gruntfile.js -e 's/livereload: true,/livereload: false,/'
 ADD custom.css /revealjs/css/
+ADD tomorrow.css /revealjs/lib/css/
 ADD index.html /revealjs/
 ADD title.js /revealjs/plugin/
 ADD assets /revealjs/assets/
