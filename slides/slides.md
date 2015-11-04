@@ -41,7 +41,7 @@ Early Kubernetes adopter:
 
 # Motivation
 
-![k8s-vs-microservices](/assets/k8s-vs-microservices.png)
+![k8s-vs-microservices](./assets/k8s-vs-microservices.png)
 <small>Google Searches For "Kubernetes" and "Microservices"</small>
 
 * Everybody should be thinking of Kubernetes
