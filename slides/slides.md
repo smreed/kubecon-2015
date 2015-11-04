@@ -9,6 +9,7 @@ Steve Reed (@_smreed)
 
 # Outline
 
+* <script type="text/javascript" src="//www.google.com/trends/embed.js?hl=en-US&q=kubernetes,+microservices&date=1/2013+35m&cmpt=q&tz=Etc/GMT%2B8&tz=Etc/GMT%2B8&content=1&cid=TIMESERIES_GRAPH_0&export=5&w=500&h=330"></script>
 * Briefly, What's a monolith? 
 * (?) Kubernetes Isn't just for microservices
 * There are reasons to move your monolith into Kubernetes
