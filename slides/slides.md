@@ -1,4 +1,4 @@
-# Kubernetes Is<br>For Monoliths Too
+# Kubernetes Is <br>For Monoliths Too
 ##### KubeCon 2015, Nov 10, 2015
 
 ***
@@ -7,12 +7,19 @@ Steve Reed (@_smreed)
 
 ---
 
+# About Me
+
+Early Kubernetes adopter:
+
+* v0.5 in GCE ~Nov 2014
+* [#3965](https://github.com/kubernetes/kubernetes/issues/3965) "GCE PD Data Loss"
+* 12 commits, ~143 lines survive today
+* One of the first production workloads
+
+---
+
 # Outline
 
-* <script type="text/javascript" src="//www.google.com/trends/embed.js?hl=en-US&q=kubernetes,+microservices&date=1/2013+35m&cmpt=q&tz=Etc/GMT%2B8&tz=Etc/GMT%2B8&content=1&cid=TIMESERIES_GRAPH_0&export=5&w=500&h=330"></script>
-* Briefly, What's a monolith? 
-* (?) Kubernetes Isn't just for microservices
-* There are reasons to move your monolith into Kubernetes
 * Its service discovery can eliminate a lot of configuration. From
   dev/test/staging/prod copies of everything, to port selection nightmares.
 * Example: dev/test/staging/prod can be namespaces, and you can otherwise
@@ -32,17 +39,41 @@ Steve Reed (@_smreed)
 
 ---
 
-# Monoliths<br>These Days
+# Motivation
 
-**Monolith**: 
+![k8s-vs-microservices](/assets/k8s-vs-microservices.png)
+<small>Google Searches For "Kubernetes" and "Microservices"</small>
 
-* Application deployed as a single executable or package.
-* May still utilize many other external services (DB, cache, SMTP, etc)
+* Everybody should be thinking of Kubernetes
+* Microservices are not for everybody
+* Monolithic applications can benefit
+* Kubernetes is not (just) "for" microservices
+
+<!--
+* (?) Kubernetes Isn't just for microservices
+* There are reasons to move your monolith into Kubernetes
+-->
 
 ---
 
-# Helmsman<br>Of The Titanic
+# Monoliths <br>These Days
 
+* Application deployed as a single executable or package.
+* An amalgam of orthogonal concerns.
+* May still utilize many other external services (DB, cache, SMTP, etc)
+
+<!--
+* Briefly, What's a monolith? 
+-->
+
+---
+
+# Helmsman <br>Of The Titanic
+
+The metaphor doesn't entirely fit, but it sounds cool.
+
+* `Services` elevate your external dependencies to 1st class status
+* 
 Can Kubernetes help with
 
 * day to day development

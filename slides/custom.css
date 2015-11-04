@@ -1,3 +1,7 @@
 section {
   text-align: left;
 }
+
+img {
+  border: 0 !important;
+}

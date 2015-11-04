@@ -28,6 +28,7 @@ RUN sed -i Gruntfile.js -e 's/livereload: true,/livereload: false,/'
 ADD custom.css /revealjs/css/
 ADD index.html /revealjs/
 ADD title.js /revealjs/plugin/
+ADD assets /revealjs/assets/
 
 EXPOSE 8000
 VOLUME ["/revealjs/md/"]
