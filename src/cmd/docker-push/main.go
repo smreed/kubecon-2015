@@ -17,6 +17,11 @@ func main() {
 			log.Println("error building", img)
 			log.Fatal(err)
 		}
+		log.Println("Pushing", img)
+		if err = img.Push(); err != nil {
+			log.Println("error ppushing", img)
+			log.Fatal(err)
+		}
 	}
 
 	log.Println("Done")
