@@ -36,7 +36,7 @@ func FindImagesInCwd() ([]Image, error) {
 }
 
 func findImages(wd string) (images []Image, err error) {
-	repo, path, tag := detectRepoPathAndTag()
+	repo, path, tag := detectRepoPathAndTag(wd)
 	dockerfiles := findDockerfiles()
 	for dockerfile, image := range mapDockerfileToRepo(repo, path, tag, dockerfiles...) {
 		img := Image{
@@ -72,13 +72,8 @@ func (i Image) Push() (err error) {
 	return err
 }
 
-func detectRepoPathAndTag() (repo, path, tag string) {
-	wd, err := os.Getwd()
-	if err != nil {
-		log.Fatal("error getting working dir", err)
-	}
-
-	repo, err = runCmdAndGetOutput("git", "config", "--get", "remote.origin.url")
+func detectRepoPathAndTag(wd string) (repo, path, tag string) {
+	repo, err := runCmdAndGetOutput("git", "config", "--get", "remote.origin.url")
 	if err != nil {
 		log.Fatal("error detecting git repo", err)
 	}
@@ -94,7 +89,7 @@ func detectRepoPathAndTag() (repo, path, tag string) {
 	path, err = runCmdAndGetOutput("git", "rev-parse", "--show-toplevel")
 	switch {
 	case wd == path:
-		path = wd
+		path = ""
 	case strings.HasPrefix(wd, path):
 		path = wd[len(path)+1:]
 		path = strings.Replace(path, "/", "-", -1)
