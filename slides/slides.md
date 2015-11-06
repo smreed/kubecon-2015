@@ -57,6 +57,8 @@ Maybe I should just write my own fake monolith?
 
 at some point, after adapters/ambassadors/sidecars are deployed you
 now have a "monolithic" "Modular Container"
+
+Brendan Burns' "The Distributed System Toolkit" at Dockercon SF 2015
 -->
 
 ---
@@ -64,7 +66,7 @@ now have a "monolithic" "Modular Container"
 # Motivation
 
 ![k8s-vs-microservices](./assets/k8s-vs-microservices.png)
-<small>Google Searches For "Kubernetes" and "Microservices"</small>
+<small>Google Searches For <font color=blue>"Kubernetes"</font> and <font color=red>"Microservices"</font></small>
 
 * Everybody should be considering Kubernetes
 * Monolithic applications can benefit
@@ -93,9 +95,20 @@ start to easily externalize a lot of the bloat and improve cohesion.
 
 ---
 
-# Step #1: Containerize
+# 3 Phases
 
-Get it in Kubernetes.
+1. Containerize
+  * single monolithic pod
+2. Decouple
+  * extract services from pod where it makes sense
+3. Refactor
+  * introduce ambassadors, adapters, and sidecars in order to increase cohesion
+
+---
+
+# Monolithic Pod
+
+"Megapod?" "Podolith?"
 
 * Expose ports
 * Mount filesystems:
@@ -103,11 +116,36 @@ Get it in Kubernetes.
   * persistent storage
   * logs
 
-TODO: snippet of monolith Dockerfile?
+---
 
-<!--
-Brendan Burns' "The Distributed System Toolkit" at Dockercon SF 2015
--->
+# Monolithic Pod
+
+```
+kind: Pod
+metadata:
+  name: monolith
+spec:
+  containers:
+  - name: monolith-app
+    image: "gcr.io/.../monolith:78f789f"
+    ports:
+    - containerPort: 8065
+    volumeMounts:
+    - name: monolith-data
+      mountPath: /data/monolith
+    - name: monolith-logs
+      mountPath: /var/log/monolith
+  - name: monolith-db
+    image: "gcr.io/.../monolith-db:78f789f"
+    env:
+    - name: PGDATA
+      value: /var/lib/postgresql/data/monolith
+    ports:
+    - containerPort: 5432
+    volumeMounts:
+    - name: monolith-db
+      mountPath: /var/lib/postgresql/data
+```
 
 ---
 
@@ -219,11 +257,13 @@ db.port = 3306
 
 # Sandbox Slide
 
-<pre><code class="gooooo">package main
+```
+package main
 
 import "fmt"
 
 func main() {
   fmt.Println("Hello!")
-}</code></pre>
+}
+```
 
