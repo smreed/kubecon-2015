@@ -1,0 +1,39 @@
+kind: Pod
+apiVersion: v1
+metadata:
+  name: monolith
+  labels:
+    app: monolith
+    version: "78f789f"
+spec:
+  containers:
+  - name: monolith-app
+    image: "gcr.io/smreed_kubecon_2015/smreed-kubecon-2015-monolith:78f789f"
+    ports:
+    - containerPort: 8065
+    volumeMounts:
+    - name: monolith-data
+      mountPath: /data/monolith
+    - name: monolith-logs
+      mountPath: /var/log/monolith
+  - name: monolith-db
+    image: "gcr.io/smreed_kubecon_2015/smreed-kubecon-2015-monolith-db:78f789f"
+    env:
+    - name: PGDATA
+      value: /var/lib/postgresql/data/monolith
+    ports:
+    - containerPort: 5432
+    volumeMounts:
+    - name: monolith-db
+      mountPath: /var/lib/postgresql/data
+  volumes:
+  - name: monolith-data
+    gcePersistentDisk:
+      pdName: monolith-data
+      fsType: ext4
+  - name: monolith-db
+    gcePersistentDisk:
+      pdName: monolith-db
+      fsType: ext4
+  - name: monolith-logs
+    emptyDir: {}
