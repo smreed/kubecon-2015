@@ -1,7 +1,7 @@
 FROM ubuntu:14.04
 
 EXPOSE 8065
-VOLUME /mattermost/data
+VOLUME /data/mattermost
 
 RUN apt-get update && apt-get install -y \
   wget

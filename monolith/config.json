@@ -23,7 +23,7 @@
     },
     "SqlSettings": {
         "DriverName": "postgres",
-        "DataSource": "postgres://mmuser:mmuser_password@10.10.10.1:5432/mattermost?sslmode=disable&connect_timeout=10",
+        "DataSource": "postgres://mmuser:mmuser_password@localhost:5432/mattermost?sslmode=disable&connect_timeout=10",
         "DataSourceReplicas": [],
         "MaxIdleConns": 10,
         "MaxOpenConns": 10,
@@ -36,11 +36,11 @@
         "EnableFile": true,
         "FileLevel": "INFO",
         "FileFormat": "",
-        "FileLocation": ""
+        "FileLocation": "/var/log/mattermost/mattermost.log"
     },
     "FileSettings": {
         "DriverName": "local",
-        "Directory": "./data/",
+        "Directory": "/data/mattermost/",
         "EnablePublicLink": true,
         "PublicLinkSalt": "A705AklYF8MFDOfcwh3I488G8vtLlVip",
         "ThumbnailWidth": 120,
@@ -63,8 +63,8 @@
         "FeedbackEmail": "",
         "SMTPUsername": "",
         "SMTPPassword": "",
-        "SMTPServer": "",
-        "SMTPPort": "",
+        "SMTPServer": "localhost",
+        "SMTPPort": "25",
         "ConnectionSecurity": "",
         "InviteSalt": "bjlSR4QqkXFBr7TP4oDzlfZmcNuH9YoS",
         "PasswordResetSalt": "vZ4DcKyVVRlKHHJpexcuXzojkE5PZ5eL",
