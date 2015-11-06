@@ -57,10 +57,10 @@
     },
     "EmailSettings": {
         "EnableSignUpWithEmail": true,
-        "SendEmailNotifications": false,
+        "SendEmailNotifications": true,
         "RequireEmailVerification": false,
         "FeedbackName": "",
-        "FeedbackEmail": "",
+        "FeedbackEmail": "steven.m.reed@gmail.com",
         "SMTPUsername": "",
         "SMTPPassword": "",
         "SMTPServer": "localhost",
