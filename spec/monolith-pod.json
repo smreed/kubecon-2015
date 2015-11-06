@@ -1,0 +1,53 @@
+{
+  "kind": "Pod",
+  "apiVersion": "v1",
+  "metadata": {
+    "name": "monolith",
+    "labels": {
+      "version": "78f789f"
+    }
+  },
+  "spec": {
+    "containers": [
+    {
+      "name": "mattermost-platform",
+      "image": "gcr.io/smreed_kubecon_2015/smreed-kubecon-2015-monolith:78f789f",
+      "env": [
+      ],
+      "volumeMounts": [
+      {
+        "name": "mattermost-data",
+        "readOnly": false,
+        "mountPath": "/data"
+      },
+      {
+        "name": "mattermost-logs",
+        "readOnly": false,
+        "mountPath": "/var/log"
+      }
+      ]
+    },
+    {
+      "name": "mattermost-db",
+      "image": "gcr.io/smreed_kubecon_2015/smreed-kubecon-2015-monolith-db:78f789f",
+      "env": [
+      ],
+      "volumeMounts": [
+      ]
+    }
+    ],
+    "volumes": [
+    {
+      "name": "mattermost-data",
+      "gcePersistentDisk": {
+        "pdName": "mattermost-data",
+        "fsType": "ext4"
+      }
+    },
+    {
+      "name": "mattermost-logs",
+      "emptyDir": {}
+    }
+    ]
+  }
+}
