@@ -20,25 +20,40 @@ Early Kubernetes adopter:
 
 # Outline
 
-* Its service discovery can eliminate a lot of configuration. From
-  dev/test/staging/prod copies of everything, to port selection nightmares.
-* Example: dev/test/staging/prod can be namespaces, and you can otherwise
-  "hardcode" service names. Required dependent services are first class
-  citizens in your infrastructure, this in my opinion isn't a bad thing to do.
-* Even if you have a database you don't want to containerize, it can still
-  be a service in Kubernetes, and utilize the same benefits.
-* When your configuration absorbs too many details about your surrounding
-  infrastructure, you can wrap that complexity up in an ambassador container.
-  For example, wrap up smtp auth w/ an open relay. Run twemproxy along-side
-  your app.
-* Replace/add features using adapters (nginx for ssl termination)
-* Show a sample monolithic application configuration in its simplest form.
-  Show how Kubernetes still allows for flexibility, app can be run in a 
-  dev or prod mode w/ no change. Walk through changes made to mattermost,
-  for example.
+* Briefly, what is a monolith?
+* Phases:
+  * Containerize: monolithic pod
+  * Decouple: Pull services out of pod where you want to scale differently
+  * Refactor: Increase modularity (introduce ambassadors/adapters/sidecars)
+    in order to simplify the monolith and increase cohesion
+* Containerize: app, database, configuration, logs, everything in a single
+  pod. Can it work? Is it worth it?
+* Decouple: Kubernetes allows you to define the interface that your
+  infrastructure must provide for your app.
+* Pod and Service specs define infrastructure requirements. Any environment that
+  implements the "spec" should be able to run, in some fashion, your application.
+  This is true for all apps in Kubernetes, including monolithic ones.
+* Development environment can implement the infrastructure interface with
+  in-memory databases, temporary filesystems, self-signed certs, etc.
+* One way to go about this refactoring is to try to optimize for simplicity
+  of the development environment.
+* Example: dummy smtp server
+* Refactor: Move the configubility of interactions with external services
+  into modular containers.
+* Example: sharded caches. simplify configuration to the simplest case and use
+  an ambassador like twemproxy.
+* Summary: Don't let a lack of microservices keep you from trying Kubernetes.
+* Summary: Because Kubernetes can do something doesn't mean it must.
+* Summary: Everything described here is possible with other tools. But Kubernetes
+  gives us a language for specifying our infrastructure needs and component
+  interaction. We can use this language to monitor and verify deployment
+  environments.
+
 
 <!--
 misc notes
+
+Maybe I should just write my own fake monolith?
 
 at some point, after adapters/ambassadors/sidecars are deployed you
 now have a "monolithic" "Modular Container"
@@ -51,10 +66,9 @@ now have a "monolithic" "Modular Container"
 ![k8s-vs-microservices](./assets/k8s-vs-microservices.png)
 <small>Google Searches For "Kubernetes" and "Microservices"</small>
 
-* Everybody should be thinking of Kubernetes
-* Microservices are not for everybody
+* Everybody should be considering Kubernetes
 * Monolithic applications can benefit
-* Kubernetes is not (just) "for" microservices
+* Kubernetes is not "for" microservices
 
 <!--
 * (?) Kubernetes Isn't just for microservices
@@ -66,13 +80,15 @@ now have a "monolithic" "Modular Container"
 # Monoliths <br>These Days
 
 * Application deployed as a single executable or package.
-* An amalgam of orthogonal concerns.
 * May still utilize many other external services (DB, cache, SMTP, etc)
 
 Often, they are not very cohesive pieces of software.
 
 <!--
-* Briefly, What's a monolith? 
+* An amalgam of orthogonal concerns.
+
+Come back to the point about cohesion. Once in K8S, you have a way to
+start to easily externalize a lot of the bloat and improve cohesion.
 -->
 
 ---
