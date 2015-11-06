@@ -33,10 +33,10 @@
     "LogSettings": {
         "EnableConsole": true,
         "ConsoleLevel": "DEBUG",
-        "EnableFile": true,
+        "EnableFile": false,
         "FileLevel": "INFO",
         "FileFormat": "",
-        "FileLocation": "/var/log/mattermost/mattermost.log"
+        "FileLocation": ""
     },
     "FileSettings": {
         "DriverName": "local",
