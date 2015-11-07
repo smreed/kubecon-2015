@@ -23,7 +23,7 @@
     },
     "SqlSettings": {
         "DriverName": "postgres",
-        "DataSource": "postgres://mmuser:mmuser_password@localhost:5432/mattermost?sslmode=disable&connect_timeout=10",
+        "DataSource": "postgres://mmuser:mmuser_password@monolith-db.default.svc.cluster.local:5432/mattermost?sslmode=disable&connect_timeout=10",
         "DataSourceReplicas": [],
         "MaxIdleConns": 10,
         "MaxOpenConns": 10,
@@ -63,7 +63,7 @@
         "FeedbackEmail": "steven.m.reed@gmail.com",
         "SMTPUsername": "",
         "SMTPPassword": "",
-        "SMTPServer": "localhost",
+        "SMTPServer": "smtp-server.default.svc.cluster.local",
         "SMTPPort": "25",
         "ConnectionSecurity": "",
         "InviteSalt": "bjlSR4QqkXFBr7TP4oDzlfZmcNuH9YoS",
