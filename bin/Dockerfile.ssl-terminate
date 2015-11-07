@@ -1,0 +1,5 @@
+FROM debian
+ADD /cert.pem /
+ADD /key.pem /
+ADD /ssl-terminate /ssl-terminate
+ENTRYPOINT /ssl-terminate
