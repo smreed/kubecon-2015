@@ -27,7 +27,7 @@ spec:
     - name: monolith-db
       mountPath: /var/lib/postgresql/data
   - name: smtp-server
-    image: "gcr.io/smreed_kubecon_2015/smreed-kubecon-2015-smtp-dummy:37a5bbc"
+    image: "gcr.io/smreed_kubecon_2015/smreed-kubecon-2015-smtp-dummy:de60fd7"
     ports:
     - containerPort: 25
   volumes:
