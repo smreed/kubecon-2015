@@ -4,11 +4,11 @@ metadata:
   name: monolith
   labels:
     app: monolith
-    version: "78f789f"
+    phase: one
 spec:
   containers:
   - name: monolith-app
-    image: "gcr.io/smreed_kubecon_2015/smreed-kubecon-2015-monolith:78f789f"
+    image: "gcr.io/smreed_kubecon_2015/smreed-kubecon-2015-monolith:37a5bbc"
     ports:
     - containerPort: 8065
     volumeMounts:
@@ -26,6 +26,10 @@ spec:
     volumeMounts:
     - name: monolith-db
       mountPath: /var/lib/postgresql/data
+  - name: smtp-server
+    image: "gcr.io/smreed_kubecon_2015/smreed-kubecon-2015-smtp-dummy:37a5bbc"
+    ports:
+    - containerPort: 25
   volumes:
   - name: monolith-data
     gcePersistentDisk:
