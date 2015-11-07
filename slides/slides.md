@@ -214,6 +214,9 @@ spec:
     emptyDir: {}
 ```
 
+* `monolith-db.default.svc.cluster.local`
+* `smtp-server.default.svc.cluster.local`
+
 ---
 
 # Phase 3: Simplify
