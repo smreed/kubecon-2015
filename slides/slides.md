@@ -24,7 +24,7 @@ Early Kubernetes adopter:
 * Phases:
   * Containerize: monolithic pod
   * Decouple: Pull services out of pod where you want to scale differently
-  * Refactor: Increase modularity (introduce ambassadors/adapters/sidecars)
+  * Simplify: Increase modularity (introduce ambassadors/adapters/sidecars)
     in order to simplify the monolith and increase cohesion
 * Containerize: app, database, configuration, logs, everything in a single
   pod. Can it work? Is it worth it?
@@ -38,7 +38,7 @@ Early Kubernetes adopter:
 * One way to go about this refactoring is to try to optimize for simplicity
   of the development environment.
 * Example: dummy smtp server
-* Refactor: Move the configubility of interactions with external services
+* Simplify: Move the configubility of interactions with external services
   into modular containers.
 * Example: sharded caches. simplify configuration to the simplest case and use
   an ambassador like twemproxy.
@@ -73,7 +73,6 @@ Brendan Burns' "The Distributed System Toolkit" at Dockercon SF 2015
 * Kubernetes is not "for" microservices
 
 <!--
-* (?) Kubernetes Isn't just for microservices
 * There are reasons to move your monolith into Kubernetes
 -->
 
@@ -101,17 +100,18 @@ start to easily externalize a lot of the bloat and improve cohesion.
   * single monolithic pod
 2. Decouple
   * extract services from pod where it makes sense
-3. Refactor
+  * refactoring your infrastructure
+3. Simplify
   * introduce ambassadors, adapters, and sidecars in order to increase cohesion
 
 ---
 
-# Monolithic Pod
+# Phase 1 <br>Containerize
 
-"Megapod?" "Podolith?"
-
-* Expose ports
-* Mount filesystems:
+* Monolithic Pod
+  * "Megapod?" "Podolith?"
+* Take this out: Expose minimal set of ports
+* Volume mounts where possible
   * configuration
   * persistent storage
   * logs
@@ -120,150 +120,67 @@ start to easily externalize a lot of the bloat and improve cohesion.
 
 # Monolithic Pod
 
+Example!
+
 ```
-kind: Pod
-metadata:
-  name: monolith
-spec:
-  containers:
-  - name: monolith-app
-    image: "gcr.io/.../monolith:78f789f"
-    ports:
-    - containerPort: 8065
-    volumeMounts:
-    - name: monolith-data
-      mountPath: /data/monolith
-    - name: monolith-logs
-      mountPath: /var/log/monolith
-  - name: monolith-db
-    image: "gcr.io/.../monolith-db:78f789f"
-    env:
-    - name: PGDATA
-      value: /var/lib/postgresql/data/monolith
-    ports:
-    - containerPort: 5432
-    volumeMounts:
-    - name: monolith-db
-      mountPath: /var/lib/postgresql/data
+monolithic pod goes here
 ```
 
 ---
 
-# Step #1: Containerize
+# Monolithic Pod
 
-<pre><code class="dockerfile">FROM ubuntu:14.04
-
-EXPOSE 8065
-VOLUME /mattermost/data
-# TODO logs
-
-# Install
-
-ADD config.json /mattermost/config/
-
-WORKDIR /mattermost/bin
-ENTRYPOINT /mattermost/bin/platform</code></pre>
+* Everything's `localhost`
+* Dependencies are specified, enforcable
+* Now make it better!
 
 ---
 
-# Step #1: Containerize
+# Phase 2: Decouple
 
-1. `docker build -t my-monolith .`
-2. `docker push my-monolith`
-3. <code>kubectl run my-monolith \<br>--image=my-monolith</code>
-
-<!--
-even if your container is the only thing running in the cluster, you still
-get the advantages of the kubernetes substrate
--->
+* Database, SMTP
+  * Needs to scale independently
+  * Might be used by other pods as they are added
+  * Want ability to proxy
+  * Want dev environment "mocks"
 
 ---
 
-# Step #2: <br>Services
+# Database Pod
 
-* Service for every external dependency
-  * databases
-  * webhooks, APIs
-* treat these as "prereqs"
-
-These services must exist, hardcode them!
-
-Kubernetes Service becomes the "interface" to these external dependencies.
-
-Interfaces allow decoupling, help reason about cohesion of system components.
-
+```
+pod yaml goes here
+```
 
 ---
 
-# Step #2: <br>More Services
+# SMTP Pod
 
-* Convert libraries to services
-  * As helpers in same pod
-  * Or as "Services"
+```
+pod yaml goes here
+```
 
-Some libraries exist in monolithic apps just to enable interaction with an
-external service. Often times, details of these systems leak into your
-monolith in the form of boilerplate code, or configuration that needs to be
-injected into the library.
+---
 
-Examples:
+# New "Podolith"
 
-* smtp: host, port, auth credentials, supported encryption
-* cache shards: names, how many, how are keys hashed
-* TLS configuration: host certs, client certs
+```
+simpler version goes here
+```
 
-This increases coupling, decreases cohesion.
+---
 
+# Phase 3: Simplify
 ---
 
 # Helmsman <br>Of The Titanic
 
 The metaphor doesn't entirely fit, but it sounds cool.
 
-* `Services` elevate your external dependencies to 1st class status
-* 
-
-Can Kubernetes help with
-
-* day to day development
-* staging and testing
+* Remove this slide if someone else uses the phrase!
 
 ---
 
-# Title
+# Thank You
 
-A monolithic application with many external dependencies can lead to complicated
-development environments.
-
----
-
-# Spaghetti.Conf (1/n)
-
-Common to have "dev", "test", and "prod" configuration for the same application.
-
-Kubernetes can provide the same flexibility with namespaces.
-
----
-
-# Spaghetti.Conf (2/n)
-
-```
-# prod-app.properties
-db.host = database.prod
-db.port = 3306
-```
-
----
-
-# Sandbox Slide
-
-```
-package main
-
-import "fmt"
-
-func main() {
-  fmt.Println("Hello!")
-}
-```
-
+* [slides, code, examples](https://github.com/smreed/kubecon-2015)
