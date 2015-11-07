@@ -1,0 +1,29 @@
+kind: Pod
+apiVersion: v1
+metadata:
+  name: monolith-app
+  labels:
+    app: monolith
+    phase: three
+spec:
+  containers:
+  - name: monolith-ssl
+    image: "gcr.io/smreed_kubecon_2015/smreed-kubecon-2015-bin-ssl-terminate:beb1c60"
+    ports:
+    - containerPort: 443
+  - name: monolith-app
+    image: "gcr.io/smreed_kubecon_2015/smreed-kubecon-2015-monolith:c01a060"
+    ports:
+    - containerPort: 8065
+    volumeMounts:
+    - name: monolith-data
+      mountPath: /data/monolith
+    - name: monolith-logs
+      mountPath: /var/log/monolith
+  volumes:
+  - name: monolith-data
+    gcePersistentDisk:
+      pdName: monolith-data
+      fsType: ext4
+  - name: monolith-logs
+    emptyDir: {}
