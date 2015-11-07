@@ -1,0 +1,17 @@
+FROM debian
+RUN apt-get update && apt-get install -y \
+  postfix \
+  libsasl2-modules
+
+ADD /main.cf /tmp/main.cf
+RUN cat /tmp/main.cf >> /etc/postfix/main.cf && rm /tmp/main.cf
+
+# cat > /etc/postfix/sasl_passwd << EOF
+# [smtp.mailgun.org]:2525 YOUR_SMTP_LOGIN:YOUR_SMTP_PASSWORD
+# EOF
+
+# postmap /etc/postfix/sasl_passwd
+# /etc/postfix/sasl_passwd.db
+
+ADD mailgun.sh /mailgun.sh
+ENTRYPOINT /mailgun.sh
