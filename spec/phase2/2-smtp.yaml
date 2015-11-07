@@ -1,0 +1,13 @@
+kind: Pod
+apiVersion: v1
+metadata:
+  name: smtp-server
+  labels:
+    app: smtp-server
+    phase: two
+spec:
+  containers:
+  - name: smtp-server
+    image: "gcr.io/smreed_kubecon_2015/smreed-kubecon-2015-smtp-dummy:de60fd7"
+    ports:
+    - containerPort: 25
