@@ -8,7 +8,7 @@ import (
 )
 
 func main() {
-	upstream, err := url.Parse("http://localhost")
+	upstream, err := url.Parse("http://localhost:8065")
 	if err != nil {
 		log.Fatal(err)
 	}
