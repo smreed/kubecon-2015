@@ -16,54 +16,81 @@ Early Kubernetes adopter:
 * 12 commits, ~143 lines survive today
 * One of the first production workloads
 
+Note:
+"Paid my dues"
+
+K8S is very open OSS, even to small contributors
+
+Honor to speak
+
 ---
 
 # Motivation
 
+* Everybody should be considering Kubernetes
 ![k8s-vs-microservices](./assets/k8s-vs-microservices.png)
 <small>Google Searches For <font color=blue>"Kubernetes"</font> and <font color=red>"Microservices"</font></small>
-
-* Everybody should be considering Kubernetes
 * Monolithic applications can benefit
-* Kubernetes is not "for" microservices
+  * dependencies documentated
+  * `kubectl`
+
+Note:
+everybody at least consider k8s
+
+k8s and microservices in same breath
+
+monolith? single deployed artifact
+
+monolith? has external infra. dependencies
 
 ---
 
-# Monoliths <br>These Days
+# Helmsman <br>Of The Titanic
 
-* Application deployed as a single executable or package.
-* May still utilize many other external services (DB, cache, SMTP, etc)
+The metaphor doesn't entirely fit, but it sounds cool.
 
-Often, they are not very cohesive pieces of software.
+* Remove this slide if someone else uses the phrase!
 
 ---
 
-# 3 Phases
+# Containerize <br>Then Refactor
 
 1. Containerize
   * single monolithic pod
-2. Decouple
+  * prerequisites "on paper"
+2. Refactor
+  * not code, but infrastructure
   * extract services from pod where it makes sense
-  * refactoring your infrastructure
-3. Simplify
-  * introduce ambassadors, adapters, and sidecars in order to increase cohesion
+  * ambassadors, adapters, and sidecars 
+    simplify app and increase cohesion
 
 ---
 
-# Phase 1 <br>Containerize
+# Containerize
 
 * Monolithic Pod
   * "Megapod?" "Podolith?"
+* Resources?
 * Volume mounts where possible
   * configuration
   * persistent storage
   * logs
 
+Note:
+containerization analogy: marking class members private so compiler can show you usages
+
+---
+
+# Example: Mattermost
+
+* Slack clone
+* Single app with many dependencies
+  * PostgreSQL
+  * SMTP
+
 ---
 
 # Monolithic Pod
-
-Example!
 
 ```
 kind: Pod
@@ -111,6 +138,19 @@ spec:
     emptyDir: {}
 ```
 
+[Demo](http://monolith/kubecon-2015)
+
+Note:
+`kubectl create -f spec/phase1`
+
+`kubectl get pods -w`
+
+`kubectl logs monolith monolith-app`
+
+if necessary
+
+`./local-up.sh`
+
 ---
 
 # Monolithic Pod
@@ -119,17 +159,17 @@ spec:
 * Dependencies are specified, enforcable
 * Now make it better!
 
-[Demo](http://monolith/kubecon-2015)
-
 ---
 
-# Phase 2: Decouple
+# Refactor
 
 * Database, SMTP
   * Needs to scale independently
   * Might be used by other pods as they are added
   * Want ability to proxy
   * Want dev environment "mocks"
+
+Note:
 
 ---
 
@@ -214,79 +254,51 @@ spec:
     emptyDir: {}
 ```
 
-* `monolith-db.default.svc.cluster.local`
-* `smtp-server.default.svc.cluster.local`
+---
+
+# Hardcode Stuff
+
+* Service hostnames are "guaranteed"
+  * `monolith-db.default.svc.cluster.local`
+  * `smtp-server.default.svc.cluster.local`
+* `localhost` for everything inside the pod
+
+Note:
+Kubernetes adds degree of freedom
+
+Your app always needs a "db", K8s manages what that "db" actually is
 
 ---
 
-# Phase 3: Simplify
+# More Refactoring 
 
-TODO : figure that out
+* `nginx` adapter container for ssl-termination
+  * and auth too?
+* `Secret`s for certs, auth credentials
+* `pgpool` as ambassador to `postgres`
+* Default ports (`80` for `HTTP`, `443` for `HTTPS`)
 
 [Demo](https://monolith-ssl/kubecon-2015)
 
----
+Note:
+* ip per pod makes port mapping easy
 
-# Helmsman <br>Of The Titanic
+`kubectl create -f spec/phase2`
 
-The metaphor doesn't entirely fit, but it sounds cool.
+`kubectl get pods -w`
 
-* Remove this slide if someone else uses the phrase!
+if necessary
 
----
+`./local-up.sh`
 
-# That's It!
-
-* Don't let a lack of microservices keep you from trying Kubernetes.
-* But Kubernetes gives us a language for specifying our infrastructure needs
-  and component interaction. We can use this language to monitor and verify
-  deployment environments.
+* use k8s api to create pods for batch work
 
 ---
 
 # Thank You
 
+* Don't let a lack of microservices keep you from trying Kubernetes.
+* If you want microservices, Kubernetes can help you get started!
 * [slides, code, examples](https://github.com/smreed/kubecon-2015)
+* [@_smreed](https://twitter.com/_smreed)
 
-<!--
-# Outline
-
-* Briefly, what is a monolith?
-* Phases:
-  * Containerize: monolithic pod
-  * Decouple: Pull services out of pod where you want to scale differently
-  * Simplify: Increase modularity (introduce ambassadors/adapters/sidecars)
-    in order to simplify the monolith and increase cohesion
-* Containerize: app, database, configuration, logs, everything in a single
-  pod. Can it work? Is it worth it?
-* Decouple: Kubernetes allows you to define the interface that your
-  infrastructure must provide for your app.
-* Pod and Service specs define infrastructure requirements. Any environment that
-  implements the "spec" should be able to run, in some fashion, your application.
-  This is true for all apps in Kubernetes, including monolithic ones.
-* Development environment can implement the infrastructure interface with
-  in-memory databases, temporary filesystems, self-signed certs, etc.
-* One way to go about this refactoring is to try to optimize for simplicity
-  of the development environment.
-* Example: dummy smtp server
-* Simplify: Move the configubility of interactions with external services
-  into modular containers.
-* Example: sharded caches. simplify configuration to the simplest case and use
-  an ambassador like twemproxy.
-* Summary: Don't let a lack of microservices keep you from trying Kubernetes.
-* Summary: Because Kubernetes can do something doesn't mean it must.
-* Summary: Everything described here is possible with other tools. But Kubernetes
-  gives us a language for specifying our infrastructure needs and component
-  interaction. We can use this language to monitor and verify deployment
-  environments.
-
-
-misc notes
-
-Maybe I should just write my own fake monolith?
-
-at some point, after adapters/ambassadors/sidecars are deployed you
-now have a "monolithic" "Modular Container"
-
-Brendan Burns' "The Distributed System Toolkit" at Dockercon SF 2015
--->
