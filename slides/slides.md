@@ -12,16 +12,19 @@ Steve Reed (@_smreed)
 Early Kubernetes adopter:
 
 * v0.5 in GCE ~Nov 2014
-* [#3965](https://github.com/kubernetes/kubernetes/issues/3965) "GCE PD Data Loss"
 * 12 commits, ~143 lines survive today
+* [#3965](https://github.com/kubernetes/kubernetes/issues/3965) "GCE PD Data Loss"
 * One of the first production workloads
 
 Note:
-"Paid my dues"
+features are but one way to be a contributor to open source
 
-K8S is very open OSS, even to small contributors
+K8S is very open project, even to small contributors
+like myself
 
 Honor to speak
+
+not here to sell you anything :)
 
 ---
 
@@ -30,9 +33,7 @@ Honor to speak
 * Everybody should be considering Kubernetes
 ![k8s-vs-microservices](./assets/k8s-vs-microservices.png)
 <small>Google Searches For <font color=blue>"Kubernetes"</font> and <font color=red>"Microservices"</font></small>
-* Monolithic applications can benefit
-  * dependencies documentated
-  * `kubectl`
+* Not just for microservices
 
 Note:
 everybody at least consider k8s
@@ -47,29 +48,47 @@ monolith? has external infra. dependencies
 
 # Helmsman <br>Of The Titanic
 
-The metaphor doesn't entirely fit, but it sounds cool.
+* Probably don't do this.
+* Remove this slide if someone else uses the title.
 
-* Remove this slide if someone else uses the phrase!
+Note:
+mostly mental exercise
 
----
+this talk: actually about the parallels
+between basic programming concepts, and kubernetes primitives
 
-# Containerize <br>Then Refactor
-
-1. Containerize
-  * single monolithic pod
-  * prerequisites "on paper"
-2. Refactor
-  * not code, but infrastructure
-  * extract services from pod where it makes sense
-  * ambassadors, adapters, and sidecars 
-    simplify app and increase cohesion
+also analogy for migrating to containers/kubernetes
 
 ---
 
-# Containerize
+# Object Oriented <br>Infrastructure?
+
+* Kubernetes Primitives
+  * they describe your application
+  * they also describe requirements
+
+Pods, Services, etc are the "interface" between your infrastructure and application.
+
+Note:
+benefit: the k8s primitives
+
+k8s primitives: yes, it's a language for describing your application's interface
+
+BUT: also language for describing required infrastructure interface
+
+monolith is just one single box with needs
+
+my monolith needs persistent storage
+
+my monolith needs a database, etc
+
+---
+
+# Containerize...
 
 * Monolithic Pod
   * "Megapod?" "Podolith?"
+* "Services without selectors"
 * Resources?
 * Volume mounts where possible
   * configuration
@@ -77,79 +96,13 @@ The metaphor doesn't entirely fit, but it sounds cool.
   * logs
 
 Note:
+let's get started
+
+your monolithic app interface is now "on paper"
+
+so are it's prereqs
+
 containerization analogy: marking class members private so compiler can show you usages
-
----
-
-# Example: Mattermost
-
-* Slack clone
-* Single app with many dependencies
-  * PostgreSQL
-  * SMTP
-
----
-
-# Monolithic Pod
-
-```
-kind: Pod
-apiVersion: v1
-metadata:
-  name: monolith
-  labels:
-    app: monolith
-    phase: one
-spec:
-  containers:
-  - name: monolith-app
-    image: "gcr.io/smreed_kubecon_2015/smreed-kubecon-2015-monolith:37a5bbc"
-    ports:
-    - containerPort: 8065
-    volumeMounts:
-    - name: monolith-data
-      mountPath: /data/monolith
-    - name: monolith-logs
-      mountPath: /var/log/monolith
-  - name: monolith-db
-    image: "gcr.io/smreed_kubecon_2015/smreed-kubecon-2015-monolith-db:78f789f"
-    env:
-    - name: PGDATA
-      value: /var/lib/postgresql/data/monolith
-    ports:
-    - containerPort: 5432
-    volumeMounts:
-    - name: monolith-db
-      mountPath: /var/lib/postgresql/data
-  - name: smtp-server
-    image: "gcr.io/smreed_kubecon_2015/smreed-kubecon-2015-smtp-dummy:de60fd7"
-    ports:
-    - containerPort: 25
-  volumes:
-  - name: monolith-data
-    gcePersistentDisk:
-      pdName: monolith-data
-      fsType: ext4
-  - name: monolith-db
-    gcePersistentDisk:
-      pdName: monolith-db
-      fsType: ext4
-  - name: monolith-logs
-    emptyDir: {}
-```
-
-[Demo](http://monolith/kubecon-2015)
-
-Note:
-`kubectl create -f spec/phase1`
-
-`kubectl get pods -w`
-
-`kubectl logs monolith monolith-app`
-
-if necessary
-
-`./local-up.sh`
 
 ---
 
@@ -158,6 +111,11 @@ if necessary
 * Everything's `localhost`
 * Dependencies are specified, enforcable
 * Now make it better!
+
+[Demo](http://monolith/kubecon-2015)
+
+Note:
+show monolithic pod yaml
 
 ---
 
@@ -170,135 +128,45 @@ if necessary
   * Want dev environment "mocks"
 
 Note:
+not code, but infrastructure
 
 ---
 
-# Database Pod
-
-```
-kind: Pod
-apiVersion: v1
-metadata:
-  name: monolith-db
-  labels:
-    app: monolith-db
-    phase: two
-spec:
-  containers:
-  - name: monolith-db
-    image: "gcr.io/smreed_kubecon_2015/smreed-kubecon-2015-monolith-db:78f789f"
-    env:
-    - name: PGDATA
-      value: /var/lib/postgresql/data/monolith
-    ports:
-    - containerPort: 5432
-    volumeMounts:
-    - name: monolith-db
-      mountPath: /var/lib/postgresql/data
-  volumes:
-  - name: monolith-db
-    gcePersistentDisk:
-      pdName: monolith-db
-      fsType: ext4
-```
-
----
-
-# SMTP Pod
-
-```
-kind: Pod
-apiVersion: v1
-metadata:
-  name: smtp-server
-  labels:
-    app: smtp-server
-    phase: two
-spec:
-  containers:
-  - name: smtp-server
-    image: "gcr.io/smreed_kubecon_2015/smreed-kubecon-2015-smtp-dummy:de60fd7"
-    ports:
-    - containerPort: 25
-```
-
----
-
-# New "Podolith"
-
-```
-kind: Pod
-apiVersion: v1
-metadata:
-  name: monolith-app
-  labels:
-    app: monolith
-    phase: two
-spec:
-  containers:
-  - name: monolith-app
-    image: "gcr.io/smreed_kubecon_2015/smreed-kubecon-2015-monolith:c01a060"
-    ports:
-    - containerPort: 8065
-    volumeMounts:
-    - name: monolith-data
-      mountPath: /data/monolith
-    - name: monolith-logs
-      mountPath: /var/log/monolith
-  volumes:
-  - name: monolith-data
-    gcePersistentDisk:
-      pdName: monolith-data
-      fsType: ext4
-  - name: monolith-logs
-    emptyDir: {}
-```
-
----
-
-# Hardcode Stuff
+# Hardcode Stuff!
 
 * Service hostnames are "guaranteed"
   * `monolith-db.default.svc.cluster.local`
   * `smtp-server.default.svc.cluster.local`
 * `localhost` for everything inside the pod
+* storage paths
+  * `/var/log/monolith`
 
 Note:
+Your app panics if the filesystem is absent or readonly, why
+not do the same for services?
+
 Kubernetes adds degree of freedom
 
 Your app always needs a "db", K8s manages what that "db" actually is
 
 ---
 
-# More Refactoring 
+# More Ideas 
 
 * `nginx` adapter container for ssl-termination
   * and auth too?
+* "semantic pipelines"
 * `Secret`s for certs, auth credentials
 * `pgpool` as ambassador to `postgres`
 * Default ports (`80` for `HTTP`, `443` for `HTTPS`)
-
-[Demo](https://monolith-ssl/kubecon-2015)
-
-Note:
-* ip per pod makes port mapping easy
-
-`kubectl create -f spec/phase2`
-
-`kubectl get pods -w`
-
-if necessary
-
-`./local-up.sh`
-
-* use k8s api to create pods for batch work
+* replace `crond` with `Job`s
 
 ---
 
 # Thank You
 
-* Don't let a lack of microservices keep you from trying Kubernetes.
-* If you want microservices, Kubernetes can help you get started!
+* Just try Kubernetes.
+* If you want to refactor your app, Kubernetes can help you get started!
 * [slides, code, examples](https://github.com/smreed/kubecon-2015)
 * [@_smreed](https://twitter.com/_smreed)
 
