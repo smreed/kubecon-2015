@@ -153,13 +153,25 @@ Your app always needs a "db", K8s manages what that "db" actually is
 # More Ideas 
 
 * "Services without selectors"
-* `nginx` adapter container for ssl-termination
-  * and auth too?
+* reverse proxy "adapter" container
+  * ssl-termination
+  * authentication
+* `pgpool` "ambassador" to `postgres`
 * "semantic pipelines"
 * `Secret`s for certs, auth credentials
-* `pgpool` as ambassador to `postgres`
 * Default ports (`80` for `HTTP`, `443` for `HTTPS`)
-* replace `crond` with `Job`s
+* replace `crond` with sidecars, `Job`s
+
+Note:
+ambassador, adapter, sidecar
+
+can add functionality without increasing size of app
+
+---
+
+# Bonus Content?
+
+* "dueling" replication controllers
 
 ---
 
