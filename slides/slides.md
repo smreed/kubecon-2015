@@ -88,7 +88,6 @@ my monolith needs a database, etc
 
 * Monolithic Pod
   * "Megapod?" "Podolith?"
-* "Services without selectors"
 * Resources?
 * Volume mounts where possible
   * configuration
@@ -153,6 +152,7 @@ Your app always needs a "db", K8s manages what that "db" actually is
 
 # More Ideas 
 
+* "Services without selectors"
 * `nginx` adapter container for ssl-termination
   * and auth too?
 * "semantic pipelines"
