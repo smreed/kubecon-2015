@@ -4,7 +4,6 @@ metadata:
   name: monolith-db
   labels:
     app: monolith-db
-    phase: two
 spec:
   containers:
   - name: monolith-db

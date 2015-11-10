@@ -4,7 +4,6 @@ metadata:
   name: smtp-server
   labels:
     app: smtp-server
-    phase: two
 spec:
   containers:
   - name: smtp-server
