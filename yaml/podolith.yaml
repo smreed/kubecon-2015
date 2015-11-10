@@ -4,7 +4,6 @@ metadata:
   name: monolith
   labels:
     app: monolith
-    phase: one
 spec:
   containers:
   - name: monolith-app
