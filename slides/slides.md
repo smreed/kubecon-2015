@@ -12,9 +12,10 @@ Steve Reed (@_smreed)
 Early Kubernetes adopter:
 
 * v0.5 in GCE ~Nov 2014
+* One of the first production workloads
 * 12 commits, ~143 lines survive today
 * [#3965](https://github.com/kubernetes/kubernetes/issues/3965) "GCE PD Data Loss"
-* One of the first production workloads
+* I have nothing to sell you today :)
 
 Note:
 features are but one way to be a contributor to open source
@@ -88,11 +89,12 @@ my monolith needs a database, etc
 
 * Monolithic Pod
   * "Megapod?" "Podolith?"
-* Resources?
 * Volume mounts where possible
   * configuration
   * persistent storage
   * logs
+* Secrets
+* Resource Limits?
 
 Note:
 let's get started
