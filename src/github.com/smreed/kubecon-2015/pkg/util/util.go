@@ -8,18 +8,40 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"regexp"
 	"strings"
 )
 
 var (
 	registry string
 	verbose  bool
+	filter   filterFunc = matchAll
 )
 
+type filterFunc func(dockerfile string) bool
+
+func matchAll(dockerfile string) bool {
+	return true
+}
+
+func matchRegexp(expr string) filterFunc {
+	rexpr := regexp.MustCompile(expr)
+	return func(dockerfile string) bool {
+		return rexpr.MatchString(dockerfile)
+	}
+}
+
 func init() {
+	var expr string
+
+	flag.StringVar(&expr, "i", "", "include only dockerfiles that match this regular expression")
 	flag.StringVar(&registry, "registry-base", "docker.io", "the registry name to prepend to each Docker image")
 	flag.BoolVar(&verbose, "verbose", false, "enables verbose output")
 	flag.Parse()
+
+	if expr != "" {
+		filter = matchRegexp(expr)
+	}
 }
 
 type Image struct {
@@ -39,6 +61,10 @@ func findImages(wd string) (images []Image, err error) {
 	repo, path, tag := detectRepoPathAndTag(wd)
 	dockerfiles := findDockerfiles()
 	for dockerfile, image := range mapDockerfileToRepo(repo, path, tag, dockerfiles...) {
+		if !filter(dockerfile) {
+			continue
+		}
+
 		img := Image{
 			Dockerfile: dockerfile,
 			Url:        image,
@@ -162,12 +188,12 @@ func generateRepoName(base, path, tag, dockerfile string) string {
 	// grab the suffix from the Dockerfile, if any (e.g. "Dockerfile.foo" => "foo")
 	suffix := dockerfile
 	if index := strings.LastIndex(suffix, "."); index != -1 {
-		suffix = "-" + suffix[index+1:]
+		suffix = suffix[index+1:]
 	} else {
-		suffix = ""
+		return base + ":" + tag
 	}
 
-	name := base + suffix + ":" + tag
+	name := base + "-" + suffix + ":" + tag
 
 	// Docker image names can't have more than 2 '/' chars in them ¯\_(ツ)_/¯
 	// replace any offending '/' chars w/ '-'
